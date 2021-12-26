@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <title>Create Product</title>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../../index.html">FGW Shop</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="../../index.html">All Product</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="">Admin</a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Content -->
+    <div class="container mt-3">
+        <form id="frm-create-product">
+
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="name" placeholder="Name" required>
+                <label for="username">Username</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="description" placeholder="Description">
+                <label for="description">Description</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="number" class="form-control" id="price" placeholder="Price" required>
+                <label for="price">Price</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <select id="category_id" class="form-select" required></select>
+                <label for="category_id">Category</label>
+            </div>
+
+            <button type="submit" class="btn btn-success">Create</button>
+            <a href="index.html" class="btn btn-warning">Back To Index</a>
+
+        </form>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="../../js/database.js"></script>
+
+    <script>
+        //input category vao select box.
+        window.onload = get_category;
+        //category: database
+        function get_category() {
+            db.transaction(function(tx) {
+                var query = "SELECT * FROM category";
+
+                tx.executeSql(query, [], function(tx, result) {
+                    log(`INFO`, `Get list of categories successfully.`);
+
+                    add_category_option(result.rows);
+                }, transaction_error);
+            });
+        }
+
+        //show dc cai category ra.
+        function add_category_option(categories) {
+            var category_select = document.getElementById("category_id");
+
+            category_select.innerHTML += `<option value="">SELECT Category</option>`;
+
+            for (var category of categories) {
+                category_select.innerHTML += `<option value="${category.id}">${category.name}</option>`;
+            }
+        }
+        // end input category vao select box.
+
+        // function nay se duoc chay khi bam cai but create. dong nghia la khi submit cai form
+        document.getElementById("frm-create-product").onsubmit = create_product;
+
+        // neu chay bang cai frm thi mac dinh luon co dong nay e.preventDefault();
+        function create_product(e) {
+            e.preventDefault();
+            //get input users.
+            var name = document.getElementById("name").value;
+            var description = document.getElementById("description").value;
+            var price = document.getElementById("price").value;
+            var category_id = document.getElementById("category_id").value;
+
+            // Insert a product into the database.
+            db.transaction(function(tx) {
+                var query = `INSERT INTO product (name, description, price, category_id) VALUES (?,?,?,?)`;
+
+                tx.executeSql(
+                    query, [name, description, price, category_id],
+                    function(tx, result) {
+                        document.getElementById("frm-create-product").reset();
+                        //luc bam create xong no se tro len lai o name.
+                        document.getElementById("name").focus();
+                        // neu chay thanh cong no goi ra message
+                        var message = `Insert "${name}" successfully.`;
+                        log(`INFO`, message);
+                        alert(message);
+                    },
+                    transaction_error
+                );
+            });
+        }
+    </script>
+</body>
+
+</html>
