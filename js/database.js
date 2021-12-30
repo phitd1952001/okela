@@ -1,27 +1,23 @@
-// kiem tra xem da co databases ten mr_been hay chua, chua thi no se tao databases moi
 var db = window.openDatabase("mr_been", "1.0", "MR BEEN", 200000);
 
 function fetch_transactions_success(name) {
     log(`INFO`, `Insert "${name}" successfully.`);
 }
 
-//thong bao chung show ra ngay thang nam.
 function log(type, message) {
     var current_time = new Date();
     console.log(`${current_time} [${type}] ${message}`);
 }
 
-// thong bao tao thanh cong
 function table_transaction_success(table) {
     log(`INFO`, `Create table "${table}" successfully.`);
 }
 
-//thong bao loi
 function transaction_error(tx, error) {
     log(`ERROR`, `SQL Error ${error.code}: ${error.message}.`);
 }
 
-// xu ly databases
+
 function initialize_database() {
     db.transaction(function(tx) {
         // thanh pho
@@ -108,26 +104,16 @@ function initialize_database() {
     });
 }
 
-// test thu du lieu vao bang tay
+
 function fetch_database() {
-    // de chay duoc phai ghi transaction ra truoc
+
     db.transaction(function(tx) {
-        // khong ghi truc tiep ra de thanh dau ?
-        // insert du lieu vo []
+
         var query = `INSERT INTO category(name, description) VALUES(?, ?)`;
 
         tx.executeSql(query, ['Category 01', 'Description 01'], fetch_transactions_success("Category 01"), transaction_error);
         tx.executeSql(query, ['Category 02', 'Description 02'], fetch_transactions_success("Category 02"), transaction_error);
         tx.executeSql(query, ['Category 03', 'Description 03'], fetch_transactions_success("Category 03"), transaction_error);
-
-        // // product
-        // query = `INSERT INTO product(name, description, price, category_id) VALUES(?, ?, ?, ?)`;
-
-        // tx.executeSql(query, ['Product 01', 'Description 01', '20000', 1], fetch_transactions_success("Product 01"), transaction_error);
-        // tx.executeSql(query, ['Product 02', 'Description 02', '10000', 1], fetch_transactions_success("Product 02"), transaction_error);
-        // tx.executeSql(query, ['Product 03', 'Description 03', '100000', 2], fetch_transactions_success("Product 03"), transaction_error);
-        // tx.executeSql(query, ['Product 04', 'Description 04', '750000', 2], fetch_transactions_success("Product 04"), transaction_error);
-        // tx.executeSql(query, ['Product 05', 'Description 05', '15000', 3], fetch_transactions_success("Product 05"), transaction_error);
 
         query = `INSERT INTO account(username, password, status) VALUES(?, ?, 1)`;
 

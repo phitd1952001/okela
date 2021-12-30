@@ -1,11 +1,8 @@
-// load databases moi lan mo trang wed
 function on_load() {
     update_cart_quantity();
 
-    //kiem tra dang nhap hay chua
     var account_id = localStorage.getItem("account_id");
 
-    //check thu xem neu account_id khac rong thi mình sẽ gọi function login_success nó co san con so 1 thì nó show ra, neu kh co = "" thì login_fail
     if (account_id != "") {
         login_success();
     } else {
@@ -13,8 +10,6 @@ function on_load() {
     }
 }
 
-// show ra cai san pham
-// lay du lieu tu database ra cho nen phai goi db.transaction ra
 function get_product() {
     db.transaction(function(tx) {
         var query = `
@@ -55,7 +50,6 @@ function show_product(products) {
     }
 }
 
-//chay cai envent cua cai nut btn cart. sau khi no chay xong no se xem xet cap nhat hay chay moi.
 function add_to_cart(product_id) {
     var account_id = localStorage.getItem("account_id");
 
@@ -76,7 +70,6 @@ function add_to_cart(product_id) {
     });
 }
 
-//cap nhat
 function update_cart_database(product_id, quantity) {
     var account_id = localStorage.getItem("account_id");
 
@@ -94,7 +87,6 @@ function update_cart_database(product_id, quantity) {
     });
 }
 
-//them san pham vao database
 function add_cart_database(product_id) {
     var account_id = localStorage.getItem("account_id");
 
@@ -112,8 +104,7 @@ function add_cart_database(product_id) {
     });
 }
 
-// cap nhat so tren nut cart(...), ve mat f-e.
-// chay 3 cho. 1/reset cai page. 2/neu insert thanh cong or cap nhat thanh cong.
+
 function update_cart_quantity() {
     var account_id = localStorage.getItem("account_id");
 
@@ -130,8 +121,6 @@ function update_cart_quantity() {
     });
 }
 
-// var frm_login= document.getElementById("frm-login");
-// frm_login.onsubmit = login;
 document.getElementById("frm-login").onsubmit = login;
 
 function login(e) {
@@ -140,7 +129,6 @@ function login(e) {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
 
-    // Get value from <input>.
     db.transaction(function(tx) {
         var query = `SELECT * FROM account WHERE username = ? AND password = ?`;
 
@@ -148,16 +136,13 @@ function login(e) {
                 if (result.rows[0]) {
                     $("#frm_login").modal("hide");
 
-                    //key,ket qua.id lay id
                     localStorage.setItem("account_id", result.rows[0].id);
                     localStorage.setItem("account_username", result.rows[0].username);
 
-                    // dang nhap thanh cong
                     login_success();
                 } else {
                     alert("Login failed.");
 
-                    //neu login kh thanh cong
                     logout();
                 }
             },
@@ -165,7 +150,6 @@ function login(e) {
     });
 }
 
-// muốn điền tên lúc đăng nhập vô, no se tim trong localStorage tìm username
 function login_success() {
     var username = localStorage.getItem("account_username");
 
@@ -175,7 +159,6 @@ function login_success() {
     `;
 }
 
-// khi user logout thì nó sẽ show nút login này lên
 function logout() {
     localStorage.setItem("account_id", "");
     localStorage.setItem("account_username", "");
@@ -185,7 +168,6 @@ function logout() {
     `;
 }
 
-//Cart
 function get_cart_list() {
     var account_id = localStorage.getItem("account_id");
 
@@ -204,13 +186,11 @@ function get_cart_list() {
     });
 }
 
-//show cart list
 function show_cart_list(products) {
     var total = 0;
     var cart_list = document.getElementById("cart-list");
 
     for (var product of products) {
-        //thanh tien
         var amount = product.price * product.quantity;
         total += amount;
 
@@ -226,7 +206,6 @@ function show_cart_list(products) {
         </tr>
         `;
     }
-    // thanh toan tong don hang, them nut btn neu lm
     cart_list.innerHTML += `
     <tr >
      <th></th>
@@ -238,8 +217,6 @@ function show_cart_list(products) {
     `;
 }
 
-
-//xoa san pham delete_cart_item
 function delete_cart_item(product_id) {
     var account_id = localStorage.getItem("account_id");
 
@@ -256,7 +233,6 @@ function delete_cart_item(product_id) {
                 log(`INFO`, message);
                 alert(message);
 
-                //xoa xong cap nhat so luong tren nut bam cua gio hang
                 update_cart_quantity();
             }, transaction_error);
     });
